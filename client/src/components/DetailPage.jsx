@@ -4,6 +4,7 @@ import PageContainer from './PageContainer.jsx'
 import TitleHero from './TitleHero.jsx'
 import DetailSkeleton from './DetailSkeleton.jsx'
 import RelatedSection from './RelatedSection.jsx'
+import WatchlistButton from './WatchlistButton.jsx'
 import EmptyState from './EmptyState.jsx'
 import ErrorState from './ErrorState.jsx'
 import useApi from '../hooks/useApi.js'
@@ -87,10 +88,13 @@ function DetailPage({ kind, id, children }) {
       <TitleHero
         item={data}
         actions={
-          <WatchLink to={watchTo}>
-            <PlayIcon />
-            {copy.watchLabel}
-          </WatchLink>
+          <>
+            <WatchLink to={watchTo}>
+              <PlayIcon />
+              {copy.watchLabel}
+            </WatchLink>
+            <WatchlistButton item={data} />
+          </>
         }
       />
       <PageContainer>
