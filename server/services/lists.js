@@ -6,6 +6,7 @@ import { createHttpError } from '../utils/httpError.js'
 const BATCH_SIZE = 6
 const BUFFER = 2
 const MAX_LIMIT = 24
+const RELATED_POOL = 14
 const missingIds = new Set()
 
 const assertType = (type) => {
@@ -81,4 +82,27 @@ export const getGenre = async (slug, options = {}) => {
   const genre = GENRES[key]
   const items = await buildItems(genre.ids, options)
   return { slug: key, name: genre.name, items }
+}
+
+export const getRelated = async (id, { type, limit } = {}) => {
+  assertType(type)
+  const max = parseLimit(limit) || 6
+  const title = await getTitle(id)
+
+  const slugs = title.genres
+    .map((genre) => genre.toLowerCase().replace(/\s+/g, '-'))
+    .filter((slug) => Object.hasOwn(GENRES, slug))
+
+  const ids = [...new Set(slugs.flatMap((slug) => GENRES[slug].ids))]
+    .filter((candidate) => candidate !== id)
+    .slice(0, RELATED_POOL)
+
+  if (ids.length === 0) return { items: [] }
+
+  const titles = await loadTitles(ids)
+  const filtered = type
+    ? titles.filter((candidate) => candidate.type === type)
+    : titles
+
+  return { items: filtered.slice(0, max).map(toCard) }
 }

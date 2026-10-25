@@ -12,7 +12,7 @@ export const apiGet = async (path, signal) => {
   try {
     response = await fetch(`/api${path}`, { signal })
   } catch (error) {
-    if (error.name === 'AbortError') throw error
+    if (error.name === 'AbortError') throw  error
     throw new ApiError('Cannot reach the server', 0)
   }
 
@@ -48,5 +48,6 @@ export const endpoints = {
   series: (id) => `/series/${encodeURIComponent(id)}`,
   season: (id, season) =>
     `/series/${encodeURIComponent(id)}/season/${encodeURIComponent(season)}`,
+  related: (id, params) => withQuery(`/related/${encodeURIComponent(id)}`, params),
   search: (params) => withQuery('/search', params),
 }

@@ -7,6 +7,7 @@ import seriesRoutes from './routes/series.js'
 import searchRoutes from './routes/search.js'
 import listRoutes from './routes/lists.js'
 import genreRoutes from './routes/genres.js'
+import relatedRoutes from './routes/related.js'
 import { notFound, errorHandler } from './middleware/errorHandler.js'
 
 const app = express()
@@ -20,6 +21,7 @@ app.use('/api/series', seriesRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/lists', listRoutes)
 app.use('/api/genres', genreRoutes)
+app.use('/api/related', relatedRoutes)
 
 app.use(notFound)
 app.use(errorHandler)

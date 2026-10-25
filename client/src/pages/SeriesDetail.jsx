@@ -1,15 +1,10 @@
 import { useParams } from 'react-router-dom'
-import PagePlaceholder from '../components/PagePlaceholder.jsx'
+import DetailPage from '../components/DetailPage.jsx'
 
 function SeriesDetail() {
     const { id } = useParams()
 
-    return (
-        <PagePlaceholder
-          title={`Series ${id}`}
-          description="Series details, seasons and episodes will appear here."
-        />
-    )
+    return <DetailPage kind="series" id={id} />
 }
 
 export default SeriesDetail
