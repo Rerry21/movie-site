@@ -11,7 +11,8 @@ router.get('/', (req, res) => {
 router.get(
   '/:slug',
   asyncHandler(async (req, res) => {
-    res.json(await getGenre(req.params.slug, req.query.type))
+    const { type, limit } = req.query
+    res.json(await getGenre(req.params.slug, {type, limit}))
   })
 )
 

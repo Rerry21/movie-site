@@ -4,12 +4,23 @@ import { toCard } from '../utils/toCard.js'
 import { createHttpError } from '../utils/httpError.js'
 
 const BATCH_SIZE = 6
+const BUFFER = 2
+const MAX_LIMIT = 24
 const missingIds = new Set()
 
 const assertType = (type) => {
   if (type !== undefined && type !== 'movie' && type !== 'series') {
     throw createHttpError(400, 'Invalid type')
   }
+}
+
+const parseLimit = (value) => {
+  if (value === undefined) return null
+  const text = String(value)
+  if (!/^\d{1,2}$/.test(text) || Number(text) < 1 || Number(text) > MAX_LIMIT) {
+    throw createHttpError(400, 'Invalid limit')
+  }
+  return Number(text)
 }
 
 const loadTitles = async (ids) => {
@@ -41,30 +52,33 @@ const loadTitles = async (ids) => {
   return titles
 }
 
-const buildItems = async (ids, type) => {
+const buildItems = async (ids, { type, limit }) => {
   assertType(type)
-  const titles = await loadTitles(ids)
+  const max = parseLimit(limit)
+  const wanted = max ? ids.slice(0, max + BUFFER) : ids
+  const titles = await loadTitles(wanted)
   const filtered = type ? titles.filter((title) => title.type === type) : titles
-  return filtered.map(toCard)
+  const cards = filtered.map(toCard)
+  return max ? cards.slice(0, max) : cards
 }
 
-export const getList = async (name, type) => {
+export const getList = async (name, options = {}) => {
   if (!Object.hasOwn(LISTS, name)) {
     throw createHttpError(404, 'List not found')
   }
-  const items = await buildItems(LISTS[name], type)
+  const items = await buildItems(LISTS[name], options)
   return { name, items }
 }
 
 export const getGenres = () =>
   Object.entries(GENRES).map(([slug, genre]) => ({ slug, name: genre.name }))
 
-export const getGenre = async (slug, type) => {
+export const getGenre = async (slug, options = {}) => {
   const key = String(slug).toLowerCase()
   if (!Object.hasOwn(GENRES, key)) {
     throw createHttpError(404, 'Genre not found')
   }
   const genre = GENRES[key]
-  const items = await buildItems(genre.ids, type)
+  const items = await buildItems(genre.ids, options)
   return { slug: key, name: genre.name, items }
 }
