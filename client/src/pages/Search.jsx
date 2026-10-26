@@ -127,7 +127,7 @@ function Search() {
 
 const description =
   ready && data
-    ? `${data.totalResults} ${data.totalResults === 1 ? 'result' : 'result'}`
+    ? `${data.totalResults} ${data.totalResults === 1 ? 'result' : 'results'}`
     : undefined
 
 return (

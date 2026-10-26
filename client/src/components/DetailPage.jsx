@@ -98,7 +98,7 @@ function DetailPage({ kind, id, children }) {
         }
       />
       <PageContainer>
-        {children}
+        {typeof children === 'function' ? children(data) : children}
         <RelatedSection id={data.id} kind={kind} />
       </PageContainer>
     </>
